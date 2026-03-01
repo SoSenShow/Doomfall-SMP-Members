@@ -19,11 +19,9 @@
             color: white;
             font-family: 'Oswald', sans-serif;
             overflow-x: hidden;
-            /* Cursor style normal kar diya gaya hai */
             cursor: default;
         }
 
-        /* Smooth Gradient Background Animation */
         .bg-animate {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -63,6 +61,16 @@
             box-shadow: 0 10px 30px rgba(255, 0, 0, 0.2);
             transform: translateY(-10px) rotateX(5deg);
             z-index: 10;
+        }
+
+        .edit-active {
+            border: 2px solid #fbbf24 !important;
+            animation: pulse-edit 2s infinite;
+        }
+
+        @keyframes pulse-edit {
+            0%, 100% { box-shadow: 0 0 5px #fbbf24; }
+            50% { box-shadow: 0 0 20px #fbbf24; }
         }
 
         .vacant-card {
@@ -122,7 +130,6 @@
             z-index: 100;
         }
 
-        /* Smooth Reveal Animation */
         .reveal {
             animation: slideUp 0.8s ease forwards;
         }
@@ -144,7 +151,11 @@
     <!-- Navigation -->
     <nav class="fixed top-0 w-full p-8 flex justify-between items-center z-40">
         <div class="text-crimson font-bold text-2xl tracking-[0.3em] uppercase">DOOMFALL</div>
-        <div class="flex items-center gap-8">
+        <div class="flex items-center gap-6">
+            <div id="editModeIndicator" class="hidden flex items-center gap-2 bg-yellow-600/20 px-3 py-1 rounded border border-yellow-600">
+                <span class="w-2 h-2 bg-yellow-500 rounded-full animate-ping"></span>
+                <span class="text-[10px] text-yellow-500 font-bold uppercase tracking-widest">Edit Mode Active</span>
+            </div>
             <button onclick="toggleAdminModal()" class="text-[10px] uppercase tracking-[0.2em] text-zinc-500 hover:text-crimson transition-colors">System_Admin</button>
         </div>
     </nav>
@@ -164,7 +175,10 @@
                 <h2 class="text-5xl font-black italic tracking-tighter uppercase leading-none">THE ELITE 25</h2>
                 <p class="text-red-600 text-xs tracking-widest mt-2 font-bold uppercase">Authorized Personnel Only</p>
             </div>
-            <button onclick="showHero()" class="text-[10px] border-b border-zinc-800 pb-1 text-zinc-500 hover:text-white transition-colors tracking-[0.3em] font-bold uppercase">← Back to Terminal</button>
+            <div class="flex items-center gap-4">
+                <button id="adminEditBtn" onclick="toggleEditMode()" class="hidden text-[10px] bg-white text-black px-4 py-2 hover:bg-red-600 hover:text-white transition-colors tracking-[0.2em] font-bold uppercase">Edit Members</button>
+                <button onclick="showHero()" class="text-[10px] border-b border-zinc-800 pb-1 text-zinc-500 hover:text-white transition-colors tracking-[0.3em] font-bold uppercase">← Back to Terminal</button>
+            </div>
         </div>
         <div id="membersGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
             <!-- Members dynamically loaded -->
@@ -193,19 +207,25 @@
                 <span class="text-green-500">✓</span>
             </div>
             <p class="text-white text-sm font-bold mb-2">ACCESS GRANTED</p>
-            <p class="text-zinc-500 text-[10px] mb-6 uppercase tracking-widest">Ab slot pe click karke edit karein.</p>
+            <p class="text-zinc-500 text-[10px] mb-6 uppercase tracking-widest">"Edit Members" button ab grid ke upar dikhega.</p>
             <button onclick="logout()" class="text-[10px] text-red-500 underline tracking-widest uppercase">Terminate Link</button>
         </div>
     </div>
 
-    <!-- Edit Member Tooltip -->
+    <!-- Edit Member Modal -->
     <div id="editSlotModal" class="admin-modal fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm p-8 z-[70] hidden">
         <h3 class="text-white mb-6 uppercase text-xs font-bold tracking-widest">Edit Entry #<span id="editingIndex">0</span></h3>
-        <input type="text" id="editName" placeholder="Player Username" class="w-full bg-zinc-900 border border-zinc-800 p-3 mb-3 text-sm text-white focus:border-red-600 outline-none">
-        <input type="text" id="editHead" placeholder="Head Skin URL or Username" class="w-full bg-zinc-900 border border-zinc-800 p-3 mb-6 text-sm text-white focus:border-red-600 outline-none">
+        <div class="mb-4">
+            <label class="block text-[10px] text-zinc-500 mb-1 uppercase tracking-widest">Player Name</label>
+            <input type="text" id="editName" placeholder="Player Username" class="w-full bg-zinc-900 border border-zinc-800 p-3 text-sm text-white focus:border-red-600 outline-none">
+        </div>
+        <div class="mb-6">
+            <label class="block text-[10px] text-zinc-500 mb-1 uppercase tracking-widest">Logo / Skin (Username or Link)</label>
+            <input type="text" id="editHead" placeholder="Head Skin URL or Username" class="w-full bg-zinc-900 border border-zinc-800 p-3 text-sm text-white focus:border-red-600 outline-none">
+        </div>
         <div class="flex gap-3">
-            <button onclick="saveSlot()" class="flex-1 bg-green-700 py-3 text-[10px] font-bold uppercase tracking-widest text-white">Commit Change</button>
-            <button onclick="closeEditSlot()" class="flex-1 bg-zinc-800 py-3 text-[10px] font-bold uppercase tracking-widest text-zinc-400">Abort</button>
+            <button onclick="saveSlot()" class="flex-1 bg-green-700 py-3 text-[10px] font-bold uppercase tracking-widest text-white">SAVE CHANGES</button>
+            <button onclick="closeEditSlot()" class="flex-1 bg-zinc-800 py-3 text-[10px] font-bold uppercase tracking-widest text-zinc-400">ABORT</button>
         </div>
     </div>
 
@@ -213,16 +233,15 @@
         // Data State
         let members = JSON.parse(localStorage.getItem('doomfall_members')) || Array(25).fill(null).map(() => ({ name: '', head: '' }));
         let isAdmin = false;
+        let editMode = false;
         let currentEditIndex = -1;
 
         // Navigation Logic
         function enterAbyss() {
             const hero = document.getElementById('hero-section');
             const roster = document.getElementById('roster');
-            
             hero.style.opacity = '0';
             hero.style.transform = 'scale(0.9)';
-            
             setTimeout(() => {
                 hero.style.display = 'none';
                 roster.style.display = 'block';
@@ -236,7 +255,6 @@
         function showHero() {
             const hero = document.getElementById('hero-section');
             const roster = document.getElementById('roster');
-            
             roster.style.opacity = '0';
             setTimeout(() => {
                 roster.style.display = 'none';
@@ -255,16 +273,16 @@
             
             members.forEach((m, i) => {
                 const card = document.createElement('div');
-                card.className = `member-card h-64 flex flex-col items-center justify-center rounded-xl p-6 text-center cursor-pointer ${!m.name ? 'vacant-card' : ''}`;
+                card.className = `member-card h-64 flex flex-col items-center justify-center rounded-xl p-6 text-center transition-all duration-300 ${!m.name ? 'vacant-card' : ''} ${editMode ? 'edit-active cursor-pointer' : 'cursor-default'}`;
                 card.style.animation = `slideUp 0.6s ease forwards ${i * 0.05}s`;
-                card.style.opacity = '0'; // For animation
+                card.style.opacity = '0';
 
                 if (m.name) {
                     const headUrl = m.head.includes('http') ? m.head : `https://mc-heads.net/head/${m.head}/128`;
                     card.innerHTML = `
                         <div class="relative group">
-                            <div class="absolute -inset-1 bg-red-600 rounded-full blur opacity-25 group-hover:opacity-75 transition duration-1000"></div>
-                            <img src="${headUrl}" alt="${m.name}" class="relative w-24 h-24 mb-6 transition-transform duration-500 group-hover:scale-110">
+                            <div class="absolute -inset-1 bg-red-600 rounded-full blur opacity-25 transition duration-1000"></div>
+                            <img src="${headUrl}" alt="${m.name}" class="relative w-24 h-24 mb-6 transition-transform duration-500">
                         </div>
                         <div class="text-white font-bold tracking-widest uppercase text-sm">${m.name}</div>
                         <div class="text-[9px] text-zinc-600 mt-2 uppercase tracking-[0.2em]">Rank: Elite</div>
@@ -276,10 +294,8 @@
                     `;
                 }
 
-                // Click event trigger correction
                 card.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    if (isAdmin) {
+                    if (isAdmin && editMode) {
                         openEditSlot(i);
                     }
                 });
@@ -303,18 +319,40 @@
                 isAdmin = true;
                 document.getElementById('loginForm').classList.add('hidden');
                 document.getElementById('editPanel').classList.remove('hidden');
+                document.getElementById('adminEditBtn').classList.remove('hidden');
                 document.body.style.boxShadow = "inset 0 0 100px rgba(255,0,0,0.1)";
             } else {
                 alert("ACCESS DENIED.");
             }
         }
 
+        function toggleEditMode() {
+            editMode = !editMode;
+            const btn = document.getElementById('adminEditBtn');
+            const indicator = document.getElementById('editModeIndicator');
+            
+            if (editMode) {
+                btn.innerText = "Exit Edit Mode";
+                btn.classList.add('bg-red-600', 'text-white');
+                indicator.classList.remove('hidden');
+            } else {
+                btn.innerText = "Edit Members";
+                btn.classList.remove('bg-red-600', 'text-white');
+                indicator.classList.add('hidden');
+            }
+            renderGrid();
+        }
+
         function logout() {
             isAdmin = false;
+            editMode = false;
             document.getElementById('loginForm').classList.remove('hidden');
             document.getElementById('editPanel').classList.add('hidden');
+            document.getElementById('adminEditBtn').classList.add('hidden');
+            document.getElementById('editModeIndicator').classList.add('hidden');
             document.body.style.boxShadow = "none";
             toggleAdminModal();
+            renderGrid();
         }
 
         function openEditSlot(index) {
@@ -322,11 +360,11 @@
             document.getElementById('editingIndex').innerText = index + 1;
             document.getElementById('editName').value = members[index].name;
             document.getElementById('editHead').value = members[index].head;
-            document.getElementById('editSlotModal').classList.remove('hidden');
+            document.getElementById('editSlotModal').style.display = 'block';
         }
 
         function closeEditSlot() {
-            document.getElementById('editSlotModal').classList.add('hidden');
+            document.getElementById('editSlotModal').style.display = 'none';
         }
 
         function saveSlot() {
