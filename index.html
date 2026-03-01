@@ -22,7 +22,6 @@
             cursor: url('https://cur.cursors-4u.net/games/gam-4/gam372.cur'), auto;
         }
 
-        /* --- SACRIFICIAL ALTAR BACKGROUND --- */
         .ritual-bg {
             position: fixed;
             inset: 0;
@@ -50,7 +49,6 @@
             to { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
-        /* --- DEMONIC TEXT --- */
         .nosifer { font-family: 'Nosifer', cursive; }
         .gothic { font-family: 'UnifrakturMaguntia', serif; }
 
@@ -59,14 +57,13 @@
             text-shadow: 0 0 10px rgba(255, 0, 0, 0.8), 2px 2px 2px #000;
         }
 
-        /* --- RITUAL CARDS --- */
         .ritual-card {
             background: linear-gradient(135deg, #1a0000 0%, #0a0000 100%);
             border: 2px solid #2a0000;
             position: relative;
             transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
             clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
-            width: 100%; /* Ensures it fits container on mobile */
+            width: 100%;
         }
 
         .ritual-card:hover {
@@ -86,22 +83,6 @@
             opacity: 0.5;
         }
 
-        /* --- BLOOD DRIP ANIMATION --- */
-        .drip {
-            position: absolute;
-            top: 0;
-            width: 2px;
-            background: var(--hellfire);
-            height: 0;
-            animation: dripping 3s infinite;
-        }
-
-        @keyframes dripping {
-            0% { height: 0; opacity: 1; }
-            100% { height: 100px; opacity: 0; }
-        }
-
-        /* --- CUSTOM BUTTON --- */
         .sacrificial-btn {
             background: #4a0000;
             border: 2px solid var(--hellfire);
@@ -129,7 +110,6 @@
             box-shadow: 0 0 50px var(--hellfire);
         }
 
-        /* --- SCROLLBAR --- */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: #000; }
         ::-webkit-scrollbar-thumb { background: var(--blood); }
@@ -140,7 +120,6 @@
     <div class="ritual-bg"></div>
     <img src="https://www.transparentpng.com/download/pentagram/pentagram-simple-design-png-6.png" class="pentagram-overlay" alt="pentagram">
 
-    <!-- Header Section -->
     <header class="fixed top-0 w-full z-[100] p-4 md:p-6 border-b border-red-900/30 backdrop-blur-md flex justify-between items-center">
         <div class="flex items-center gap-4">
             <span class="nosifer text-red-600 text-lg md:text-2xl tracking-tighter">DOOMFALL</span>
@@ -150,7 +129,6 @@
         </div>
     </header>
 
-    <!-- Hero / Entry -->
     <section id="hero" class="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20">
         <div class="mb-4 md:mb-6 nosifer text-red-700 animate-pulse text-[10px] md:text-sm">25 Souls Required for the Ritual</div>
         <h1 class="gothic text-5xl md:text-8xl lg:text-9xl mb-8 md:mb-10 blood-text leading-tight">Forbidden <br> Covenant</h1>
@@ -158,16 +136,14 @@
         <button onclick="beginRitual()" class="sacrificial-btn nosifer">VIEW MEMBERS</button>
     </section>
 
-    <!-- Main Grid -->
     <section id="roster" class="relative z-10 max-w-7xl mx-auto py-24 md:py-32 px-6 hidden opacity-0 transition-all duration-1000">
         <div class="text-center mb-16 md:mb-24">
             <h2 class="nosifer text-3xl md:text-5xl text-red-600 mb-4 uppercase">Doomfall Members</h2>
             <div class="w-24 md:w-32 h-1 bg-red-600 mx-auto"></div>
         </div>
 
-        <!-- Grid updated for better mobile responsiveness -->
         <div id="membersGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 md:gap-12">
-            <!-- Rendered via JS -->
+            <!-- Members loading from cloud -->
         </div>
 
         <div class="mt-16 md:mt-24 flex flex-col md:flex-row items-center justify-center gap-6">
@@ -176,12 +152,8 @@
         </div>
     </section>
 
-    <!-- Admin Login -->
     <div id="adminModal" class="fixed inset-0 z-[200] hidden flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl">
         <div class="w-full max-w-md p-8 md:p-12 border-2 border-red-900 bg-[#050000] relative">
-            <div class="drip" style="left: 10%;"></div>
-            <div class="drip" style="left: 90%; animation-delay: 1.5s;"></div>
-            
             <h3 class="nosifer text-red-600 text-center text-lg md:text-xl mb-8 md:mb-12 uppercase">Identify Yourself</h3>
             <div id="loginForm" class="space-y-6 md:space-y-8">
                 <input type="email" id="adminEmail" class="w-full bg-transparent border-b border-red-900/50 p-3 md:p-4 outline-none focus:border-red-600 transition-all text-red-500 font-mono text-sm" placeholder="Sinner's Email">
@@ -196,13 +168,11 @@
         </div>
     </div>
 
-    <!-- Edit Entity -->
     <div id="editSlotModal" class="fixed inset-0 z-[300] hidden flex items-center justify-center p-4 bg-black/90">
         <div class="w-full max-w-lg p-6 md:p-10 bg-[#0a0000] border-2 border-red-600 shadow-[0_0_50px_rgba(139,0,0,0.3)]">
             <h4 class="nosifer text-red-600 text-center mb-8 md:mb-10 text-sm md:text-base">Modify the Soul</h4>
             <div class="space-y-6 md:space-y-8">
                 <input type="text" id="editName" class="w-full bg-black border border-red-900 p-3 md:p-4 text-red-500 nosifer focus:border-red-600 outline-none text-xs" placeholder="Soul Alias">
-                
                 <div class="flex flex-col items-center">
                     <div id="previewBox" class="w-24 h-24 md:w-32 md:h-32 border-2 border-red-900/30 flex items-center justify-center bg-black mb-4 md:mb-6 relative group overflow-hidden">
                         <img id="headPreview" src="" class="hidden w-full h-full object-contain">
@@ -212,7 +182,6 @@
                     <button onclick="document.getElementById('fileInput').click()" class="text-[8px] md:text-[10px] text-red-600 border border-red-900 px-4 md:px-6 py-2 hover:bg-red-900/20 transition-all nosifer">Capture Image</button>
                     <input type="hidden" id="headBase64">
                 </div>
-
                 <div class="flex flex-col md:flex-row gap-4">
                     <button onclick="confirmEdit()" class="flex-1 sacrificial-btn text-[10px] py-3 md:py-4">Bind Soul</button>
                     <button onclick="closeEditModal()" class="flex-1 bg-transparent border border-red-900 text-red-900 py-3 md:py-4 text-[10px] font-bold hover:text-red-500 uppercase">Banish</button>
@@ -221,15 +190,73 @@
         </div>
     </div>
 
-    <script>
-        // Load state from localStorage or default
-        let members = JSON.parse(localStorage.getItem('doomfall_ritual_data')) || Array(25).fill(null).map(() => ({ name: '', head: '' }));
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        let members = Array(25).fill(null).map(() => ({ name: '', head: '' }));
         let isAdmin = false;
         let isEditMode = false;
         let targetIndex = -1;
+        let currentUser = null;
 
-        // UI Logic
-        function beginRitual() {
+        // --- AUTH SETUP ---
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.error("Auth Error", err);
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                // Once authenticated, sync data from cloud
+                syncData();
+            }
+        });
+
+        initAuth();
+
+        // --- DATA SYNC (FIRESTORE) ---
+        function syncData() {
+            const ritualDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'ritual_state');
+            
+            // Listen for real-time updates from cloud
+            onSnapshot(ritualDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    members = docSnap.data().members || members;
+                } else {
+                    // Initialize if not exists
+                    saveToCloud();
+                }
+                renderRitual();
+            }, (error) => {
+                console.error("Sync error:", error);
+            });
+        }
+
+        async function saveToCloud() {
+            if (!currentUser) return;
+            const ritualDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'ritual_state');
+            await setDoc(ritualDocRef, { members });
+        }
+
+        // --- UI LOGIC ---
+        window.beginRitual = () => {
             document.getElementById('hero').style.transform = 'translateY(-50px)';
             document.getElementById('hero').style.opacity = '0';
             setTimeout(() => {
@@ -242,7 +269,7 @@
             renderRitual();
         }
 
-        function endRitual() {
+        window.endRitual = () => {
             const roster = document.getElementById('roster');
             roster.style.opacity = '0';
             setTimeout(() => {
@@ -258,13 +285,13 @@
 
         function renderRitual() {
             const grid = document.getElementById('membersGrid');
+            if (!grid) return;
             grid.innerHTML = '';
             
             members.forEach((m, i) => {
                 const card = document.createElement('div');
                 card.className = `ritual-card min-h-[340px] md:min-h-[380px] p-6 md:p-8 flex flex-col items-center justify-center cursor-pointer group ${!m.name ? 'opacity-20 hover:opacity-100 grayscale' : ''} ${isEditMode ? 'border-red-500 animate-pulse' : ''}`;
                 
-                // MC head fallback or data url
                 const headSrc = m.head ? (m.head.startsWith('data') ? m.head : `https://mc-heads.net/head/${m.head}/128`) : null;
 
                 card.innerHTML = `
@@ -288,12 +315,10 @@
             });
         }
 
-        // Admin Auth Logic
-        function toggleAdminModal() {
-            document.getElementById('adminModal').classList.toggle('hidden');
-        }
+        // --- ADMIN & EDITING ---
+        window.toggleAdminModal = () => document.getElementById('adminModal').classList.toggle('hidden');
 
-        function verifyAccess() {
+        window.verifyAccess = () => {
             const email = document.getElementById('adminEmail').value;
             const pass = document.getElementById('adminPass').value;
             if(email === 'tdas81378@gmail.com' && pass === 'meisshub') {
@@ -304,24 +329,23 @@
             } else {
                 alert("The Abyss rejects your soul. Incorrect Key.");
             }
-        }
+        };
 
-        function toggleEditMode() {
+        window.toggleEditMode = () => {
             isEditMode = !isEditMode;
             document.getElementById('adminBtn').innerText = isEditMode ? "Seal Contract" : "Alter the Contract";
             renderRitual();
-        }
+        };
 
-        function logout() {
+        window.logout = () => {
             isAdmin = false; isEditMode = false;
             document.getElementById('loginForm').classList.remove('hidden');
             document.getElementById('adminSuccess').classList.add('hidden');
             document.getElementById('adminBtn').classList.add('hidden');
             toggleAdminModal();
             renderRitual();
-        }
+        };
 
-        // Data Management
         function openEditModal(i) {
             targetIndex = i;
             document.getElementById('editName').value = members[i].name;
@@ -336,11 +360,9 @@
             document.getElementById('editSlotModal').classList.remove('hidden');
         }
 
-        function closeEditModal() {
-            document.getElementById('editSlotModal').classList.add('hidden');
-        }
+        window.closeEditModal = () => document.getElementById('editSlotModal').classList.add('hidden');
 
-        function processFile(input) {
+        window.processFile = (input) => {
             const file = input.files[0];
             if(file) {
                 const reader = new FileReader();
@@ -352,17 +374,16 @@
                 };
                 reader.readAsDataURL(file);
             }
-        }
+        };
 
-        function confirmEdit() {
+        window.confirmEdit = async () => {
             const name = document.getElementById('editName').value;
             const head = document.getElementById('headBase64').value;
             
             members[targetIndex] = { name, head };
-            localStorage.setItem('doomfall_ritual_data', JSON.stringify(members));
-            renderRitual();
+            await saveToCloud(); // Save to cloud instead of localStorage
             closeEditModal();
-        }
+        };
     </script>
 </body>
 </html>
