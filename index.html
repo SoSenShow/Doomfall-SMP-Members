@@ -1,439 +1,345 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doomfall SMP | Official Portal</title>
+    <title>DOOMFALL | THE ELITE 25</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Rubik+Glitch&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js" type="module"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js" type="module"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js" type="module"></script>
-
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Oswald:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --blood-red: #FF0000;
-            --dark-red: #8B0000;
-            --black: #000000;
+            --crimson: #FF0000;
+            --blood-dark: #2a0000;
+            --abyss: #0a0a0a;
+            --surface: #121212;
         }
 
         body {
-            background-color: var(--black);
+            background-color: var(--abyss);
             color: white;
             font-family: 'Oswald', sans-serif;
             overflow-x: hidden;
+            /* Cursor style normal kar diya gaya hai */
+            cursor: default;
         }
 
-        .font-glitch { font-family: 'Rubik Glitch', system-ui; }
-
-        .glow-text {
-            color: var(--blood-red);
-            text-shadow: 0 0 10px var(--blood-red), 0 0 20px var(--dark-red);
+        /* Smooth Gradient Background Animation */
+        .bg-animate {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #1a0000 0%, #000000 100%);
+            z-index: -1;
+            animation: pulseBg 10s infinite alternate;
         }
 
-        .glow-box:hover {
-            box-shadow: 0 0 20px var(--blood-red), inset 0 0 10px var(--dark-red);
-            border-color: var(--blood-red);
+        @keyframes pulseBg {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
         }
 
-        @keyframes popIn {
-            0% { opacity: 0; transform: scale(0.8) translateY(30px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
+        .doom-title {
+            font-family: 'Cinzel Decorative', cursive;
+            text-shadow: 0 0 20px var(--crimson);
+            animation: flicker 3s infinite ease-in-out;
+            letter-spacing: 0.1em;
         }
 
-        .animate-pop { animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-
-        .shake { animation: shake 0.5s ease-in-out; }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+        @keyframes flicker {
+            0%, 100% { opacity: 1; transform: scale(1); filter: blur(0px); }
+            50% { opacity: 0.8; transform: scale(1.02); filter: blur(1px); }
+            52% { opacity: 1; }
         }
 
-        .avatar-preview {
-            width: 100px;
-            height: 100px;
-            border: 2px solid var(--dark-red);
-            border-radius: 50%;
-            object-fit: cover;
-            background: #111;
+        .member-card {
+            background: var(--surface);
+            border: 1px solid #222;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            transform-style: preserve-3d;
         }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: var(--dark-red); border-radius: 10px; }
+        .member-card:hover {
+            border-color: var(--crimson);
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.2);
+            transform: translateY(-10px) rotateX(5deg);
+            z-index: 10;
+        }
+
+        .vacant-card {
+            border: 1px dashed #333;
+            background: transparent;
+            opacity: 0.6;
+        }
+
+        .vacant-card:hover {
+            opacity: 1;
+            border-color: var(--crimson);
+            background: rgba(255, 0, 0, 0.02);
+        }
+
+        .btn-abyss {
+            position: relative;
+            background: transparent;
+            border: 1px solid var(--crimson);
+            overflow: hidden;
+            transition: 0.4s;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .btn-abyss::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,0,0,0.4), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-abyss:hover::before {
+            left: 100%;
+        }
+
+        .btn-abyss:hover {
+            box-shadow: 0 0 20px var(--crimson);
+            background: var(--crimson);
+            color: black;
+        }
+
+        .admin-modal {
+            background: rgba(10, 10, 10, 0.98);
+            border: 1px solid var(--crimson);
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* Smooth Reveal Animation */
+        .reveal {
+            animation: slideUp 0.8s ease forwards;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #hero-section { transition: all 0.8s ease; }
+        #roster { display: none; opacity: 0; }
     </style>
 </head>
-<body class="antialiased min-h-screen relative selection:bg-red-900 selection:text-white">
+<body>
 
-    <canvas id="netherCanvas" class="fixed inset-0 z-0 pointer-events-none opacity-40"></canvas>
+    <div class="bg-animate"></div>
+    <div class="noise-overlay"></div>
 
-    <div class="relative z-10 flex flex-col min-h-screen">
-        
-        <!-- Admin Toggle (Top Right) -->
-        <div class="fixed top-4 right-4 z-50">
-            <button id="adminLoginBtn" class="flex items-center gap-2 bg-black/60 border border-red-900/50 px-4 py-2 rounded-full hover:bg-red-900/20 transition-all group backdrop-blur-sm">
-                <span id="adminStatusIcon" class="text-red-600">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                </span>
-                <span id="adminStatusText" class="text-[10px] uppercase tracking-widest text-gray-400 group-hover:text-red-500 font-bold">Admin Portal</span>
-            </button>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full p-8 flex justify-between items-center z-40">
+        <div class="text-crimson font-bold text-2xl tracking-[0.3em] uppercase">DOOMFALL</div>
+        <div class="flex items-center gap-8">
+            <button onclick="toggleAdminModal()" class="text-[10px] uppercase tracking-[0.2em] text-zinc-500 hover:text-crimson transition-colors">System_Admin</button>
         </div>
-        
-        <!-- Hero Section -->
-        <section id="landing" class="min-h-screen flex flex-col items-center justify-center px-4 transition-all duration-700">
-            <div class="text-center mb-12">
-                <h2 class="text-red-800 text-xl uppercase tracking-[0.5em] mb-4 font-bold opacity-80">The Nether Awaits</h2>
-                <h1 class="font-glitch text-6xl md:text-8xl glow-text uppercase">DOOMFALL SMP</h1>
-            </div>
+    </nav>
 
-            <button id="viewMembersBtn" class="group relative px-10 py-5 bg-transparent border-2 border-red-900 text-red-500 font-bold text-xl uppercase tracking-widest overflow-hidden transition-all glow-box hover:text-white">
-                <span class="relative z-10 flex items-center gap-3">View Survivors</span>
-                <div class="absolute inset-0 bg-red-600 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 z-0"></div>
-            </button>
-        </section>
+    <!-- Hero Section -->
+    <section id="hero-section" class="h-screen flex flex-col items-center justify-center text-center px-4">
+        <div class="mb-2 text-crimson tracking-[1em] text-xs font-bold reveal" style="animation-delay: 0.2s;">ESTABLISHED IN CHAOS</div>
+        <h1 class="doom-title text-7xl md:text-[10rem] font-black mb-8 reveal" style="animation-delay: 0.4s;">DOOMFALL</h1>
+        <div class="h-[1px] w-24 bg-red-600 mb-12 reveal" style="animation-delay: 0.5s;"></div>
+        <button onclick="enterAbyss()" class="btn-abyss px-16 py-5 text-sm font-bold reveal" style="animation-delay: 0.6s;">VIEW MEMBERS</button>
+    </section>
 
-        <!-- Members Section -->
-        <section id="members" class="hidden min-h-screen py-20 px-4 max-w-7xl mx-auto w-full">
-            <div class="text-center mb-16">
-                <h2 class="font-glitch text-5xl glow-text uppercase mb-2">Member List</h2>
-                <p id="instructionText" class="text-gray-500 tracking-[0.2em] uppercase text-xs mb-4">Official Roster of Doomfall</p>
-                <div class="h-1 w-20 bg-red-600 mx-auto rounded shadow-[0_0_10px_#ff0000]"></div>
+    <!-- Roster Grid -->
+    <section id="roster" class="max-w-7xl mx-auto py-32 px-6 min-h-screen">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-4">
+            <div>
+                <h2 class="text-5xl font-black italic tracking-tighter uppercase leading-none">THE ELITE 25</h2>
+                <p class="text-red-600 text-xs tracking-widest mt-2 font-bold uppercase">Authorized Personnel Only</p>
             </div>
+            <button onclick="showHero()" class="text-[10px] border-b border-zinc-800 pb-1 text-zinc-500 hover:text-white transition-colors tracking-[0.3em] font-bold uppercase">← Back to Terminal</button>
+        </div>
+        <div id="membersGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+            <!-- Members dynamically loaded -->
+        </div>
+    </section>
 
-            <div id="membersGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                <!-- Cards Load Here -->
+    <!-- Admin Terminal Modal -->
+    <div id="adminModal" class="admin-modal fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-10 z-[60]">
+        <div class="flex justify-between items-center mb-8">
+            <h3 class="text-crimson font-bold tracking-[0.3em] text-sm">SECURITY CHECK</h3>
+            <button onclick="toggleAdminModal()" class="text-zinc-600 hover:text-white">✕</button>
+        </div>
+        <div id="loginForm">
+            <div class="mb-4">
+                <label class="block text-[10px] text-zinc-500 mb-1 uppercase tracking-widest">Identify</label>
+                <input type="email" id="adminEmail" class="w-full bg-zinc-900 border border-zinc-800 p-4 text-sm text-white focus:outline-none focus:border-red-600 transition-all">
             </div>
-            
-            <div class="mt-16 text-center">
-                <button id="backBtn" class="text-gray-600 hover:text-red-500 transition-colors uppercase tracking-[0.3em] text-[10px] border-b border-transparent hover:border-red-500 pb-1">Back to Surface</button>
+            <div class="mb-8">
+                <label class="block text-[10px] text-zinc-500 mb-1 uppercase tracking-widest">Security Key</label>
+                <input type="password" id="adminPass" class="w-full bg-zinc-900 border border-zinc-800 p-4 text-sm text-white focus:outline-none focus:border-red-600 transition-all">
             </div>
-        </section>
-    </div>
-
-    <!-- Admin Auth Modal (Updated with Email & Password) -->
-    <div id="loginModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-xl transition-all">
-        <div class="bg-[#050505] border border-red-900/50 p-8 rounded-xl glow-box w-11/12 max-w-sm text-center">
-            <div class="mb-6">
-                <div class="w-16 h-16 bg-red-900/20 border border-red-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                </div>
-                <h3 class="font-glitch text-2xl text-red-500 uppercase tracking-widest">Admin Access</h3>
+            <button onclick="attemptLogin()" class="w-full bg-red-600 py-4 text-xs font-bold uppercase tracking-widest hover:bg-red-700 transition-all text-black">Decrypt & Access</button>
+        </div>
+        <div id="editPanel" class="hidden text-center">
+            <div class="w-12 h-12 border-2 border-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-green-500">✓</span>
             </div>
-            <input type="email" id="adminEmailInput" placeholder="EMAIL ADDRESS" class="w-full bg-black border border-red-900/30 text-white p-3 mb-4 focus:outline-none focus:border-red-500 font-bold tracking-widest text-center rounded-lg text-sm">
-            <input type="password" id="adminPassInput" placeholder="PASSWORD" class="w-full bg-black border border-red-900/30 text-white p-3 mb-6 focus:outline-none focus:border-red-500 font-bold tracking-widest text-center rounded-lg text-sm">
-            <div class="flex flex-col gap-3">
-                <button id="submitLoginBtn" class="w-full bg-red-900 hover:bg-red-600 text-white py-3 rounded-lg uppercase text-xs font-bold tracking-widest transition-all">Verify Identity</button>
-                <button id="closeLoginBtn" class="w-full text-gray-600 hover:text-white py-2 uppercase text-[10px] tracking-widest">Abort Mission</button>
-            </div>
+            <p class="text-white text-sm font-bold mb-2">ACCESS GRANTED</p>
+            <p class="text-zinc-500 text-[10px] mb-6 uppercase tracking-widest">Ab slot pe click karke edit karein.</p>
+            <button onclick="logout()" class="text-[10px] text-red-500 underline tracking-widest uppercase">Terminate Link</button>
         </div>
     </div>
 
-    <!-- Edit Member Modal -->
-    <div id="addMemberModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-        <div class="bg-[#0a0a0a] border border-red-900 p-8 rounded-xl glow-box w-11/12 max-w-md transform transition-all scale-95 opacity-0" id="modalContent">
-            <h3 class="font-glitch text-3xl text-red-600 mb-2 uppercase">Update Plot</h3>
-            <p class="text-gray-500 text-[10px] mb-6 uppercase tracking-widest">Assign a new soul to this coordinate</p>
-            
-            <div class="flex flex-col items-center gap-4 mb-6">
-                <!-- Avatar Preview -->
-                <img id="avatarPreview" src="" class="avatar-preview hidden" alt="Preview">
-                <div id="avatarPlaceholder" class="avatar-preview flex items-center justify-center text-red-900 bg-red-900/10 border-dashed">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                </div>
-                <label class="cursor-pointer bg-red-900/20 border border-red-900 px-4 py-2 rounded text-[10px] uppercase font-bold tracking-widest hover:bg-red-900 transition-colors">
-                    Upload Logo
-                    <input type="file" id="logoUploadInput" accept="image/*" class="hidden">
-                </label>
-            </div>
-
-            <input type="text" id="memberNameInput" placeholder="Player IGN" class="w-full bg-black border border-red-900/40 text-white p-4 mb-8 focus:outline-none focus:border-red-500 font-bold tracking-widest rounded-lg">
-            
-            <div class="flex justify-between items-center">
-                <button id="cancelBtn" class="text-gray-500 hover:text-white uppercase tracking-widest text-[10px] font-bold">Discard</button>
-                <button id="saveBtn" class="bg-red-900 hover:bg-red-600 text-white px-8 py-3 rounded-lg uppercase tracking-widest text-xs font-bold transition-all shadow-lg">Confirm Entry</button>
-            </div>
+    <!-- Edit Member Tooltip -->
+    <div id="editSlotModal" class="admin-modal fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm p-8 z-[70] hidden">
+        <h3 class="text-white mb-6 uppercase text-xs font-bold tracking-widest">Edit Entry #<span id="editingIndex">0</span></h3>
+        <input type="text" id="editName" placeholder="Player Username" class="w-full bg-zinc-900 border border-zinc-800 p-3 mb-3 text-sm text-white focus:border-red-600 outline-none">
+        <input type="text" id="editHead" placeholder="Head Skin URL or Username" class="w-full bg-zinc-900 border border-zinc-800 p-3 mb-6 text-sm text-white focus:border-red-600 outline-none">
+        <div class="flex gap-3">
+            <button onclick="saveSlot()" class="flex-1 bg-green-700 py-3 text-[10px] font-bold uppercase tracking-widest text-white">Commit Change</button>
+            <button onclick="closeEditSlot()" class="flex-1 bg-zinc-800 py-3 text-[10px] font-bold uppercase tracking-widest text-zinc-400">Abort</button>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
-        // Firebase config must be filled by user
-        const firebaseConfig = {
-            apiKey: "", 
-            authDomain: "", 
-            projectId: "", 
-            storageBucket: "", 
-            messagingSenderId: "", 
-            appId: "" 
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'doomfall-smp';
-
-        /**
-         * STATE MANAGEMENT
-         */
-        const TOTAL_SLOTS = 25;
+    <script>
+        // Data State
+        let members = JSON.parse(localStorage.getItem('doomfall_members')) || Array(25).fill(null).map(() => ({ name: '', head: '' }));
         let isAdmin = false;
-        
-        // ADMIN CREDENTIALS PROVIDED BY USER
-        const ADMIN_EMAIL = "tdas81378@gmail.com";
-        const ADMIN_PASS = "meisshub";
-
-        let membersData = new Array(TOTAL_SLOTS).fill(null).map(() => ({ name: "", logo: "" }));
         let currentEditIndex = -1;
-        let currentTempLogo = "";
 
-        // UI Selectors
-        const landingSection = document.getElementById('landing');
-        const membersSection = document.getElementById('members');
-        const membersGrid = document.getElementById('membersGrid');
-        const adminEmailInput = document.getElementById('adminEmailInput');
-        const adminPassInput = document.getElementById('adminPassInput');
-        const modalContent = document.getElementById('modalContent');
-        const nameInput = document.getElementById('memberNameInput');
-        const logoUploadInput = document.getElementById('logoUploadInput');
-        const avatarPreview = document.getElementById('avatarPreview');
-        const avatarPlaceholder = document.getElementById('avatarPlaceholder');
-
-        /**
-         * REAL-TIME DATA SYNC
-         */
-        async function initSync() {
-            try {
-                await signInAnonymously(auth);
-                const docRef = doc(db, 'artifacts', appId, 'public', 'roster_v2');
-                onSnapshot(docRef, (docSnap) => {
-                    if (docSnap.exists()) {
-                        membersData = docSnap.data().list || membersData;
-                    } else {
-                        setDoc(docRef, { list: membersData });
-                    }
-                    renderCards(false);
-                }, (error) => console.error("Sync Error:", error));
-            } catch(e) { console.error("Auth failed:", e); }
+        // Navigation Logic
+        function enterAbyss() {
+            const hero = document.getElementById('hero-section');
+            const roster = document.getElementById('roster');
+            
+            hero.style.opacity = '0';
+            hero.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                hero.style.display = 'none';
+                roster.style.display = 'block';
+                setTimeout(() => {
+                    roster.style.opacity = '1';
+                    window.scrollTo({ top: 0, behavior: 'instant' });
+                }, 50);
+            }, 600);
         }
 
-        function renderCards(animate = false) {
-            membersGrid.innerHTML = '';
-            document.getElementById('instructionText').innerText = isAdmin ? "ADMIN MODE: Click any plot to edit" : "Official Roster of Doomfall";
+        function showHero() {
+            const hero = document.getElementById('hero-section');
+            const roster = document.getElementById('roster');
             
-            membersData.forEach((member, index) => {
-                const isEmpty = !member || !member.name || member.name.trim() === "";
-                const displayName = isEmpty ? "Vacant Slot" : member.name;
-                const logo = (member && member.logo) ? member.logo : "";
-                
-                const cardHTML = `
-                    <div ${isAdmin ? `onclick="window.openModal(${index})"` : ''} class="${animate ? 'opacity-0 animate-pop' : ''} bg-[#080808] border ${isEmpty ? 'border-red-900/20 border-dashed' : 'border-red-900/40'} rounded-xl p-6 flex flex-col items-center justify-center text-center ${isAdmin ? 'cursor-pointer hover:border-red-600 hover:-translate-y-1 glow-box' : 'cursor-default'} group transition-all duration-300 relative overflow-hidden">
-                        <div class="w-20 h-20 ${isEmpty ? 'bg-black' : 'bg-red-900/10'} border border-red-900/30 rounded-full mb-4 flex items-center justify-center group-hover:border-red-500 transition-all overflow-hidden">
-                            ${logo ? `<img src="${logo}" class="w-full h-full object-cover">` : `
-                                <span class="font-glitch text-2xl ${isEmpty ? 'text-gray-800' : 'text-red-600'}">?</span>
-                            `}
+            roster.style.opacity = '0';
+            setTimeout(() => {
+                roster.style.display = 'none';
+                hero.style.display = 'flex';
+                setTimeout(() => {
+                    hero.style.opacity = '1';
+                    hero.style.transform = 'scale(1)';
+                }, 50);
+            }, 600);
+        }
+
+        // Grid Rendering
+        function renderGrid() {
+            const grid = document.getElementById('membersGrid');
+            grid.innerHTML = '';
+            
+            members.forEach((m, i) => {
+                const card = document.createElement('div');
+                card.className = `member-card h-64 flex flex-col items-center justify-center rounded-xl p-6 text-center cursor-pointer ${!m.name ? 'vacant-card' : ''}`;
+                card.style.animation = `slideUp 0.6s ease forwards ${i * 0.05}s`;
+                card.style.opacity = '0'; // For animation
+
+                if (m.name) {
+                    const headUrl = m.head.includes('http') ? m.head : `https://mc-heads.net/head/${m.head}/128`;
+                    card.innerHTML = `
+                        <div class="relative group">
+                            <div class="absolute -inset-1 bg-red-600 rounded-full blur opacity-25 group-hover:opacity-75 transition duration-1000"></div>
+                            <img src="${headUrl}" alt="${m.name}" class="relative w-24 h-24 mb-6 transition-transform duration-500 group-hover:scale-110">
                         </div>
-                        <h3 class="text-sm font-bold ${isEmpty ? 'text-gray-700' : 'text-gray-100'} tracking-widest uppercase truncate w-full px-2">${displayName}</h3>
-                        ${!isEmpty ? '<div class="mt-2 text-[8px] text-red-700 tracking-[0.4em] font-bold uppercase">Legendary Survivor</div>' : ''}
-                    </div>
-                `;
-                membersGrid.insertAdjacentHTML('beforeend', cardHTML);
+                        <div class="text-white font-bold tracking-widest uppercase text-sm">${m.name}</div>
+                        <div class="text-[9px] text-zinc-600 mt-2 uppercase tracking-[0.2em]">Rank: Elite</div>
+                    `;
+                } else {
+                    card.innerHTML = `
+                        <div class="w-12 h-12 border border-zinc-800 rounded-full flex items-center justify-center mb-4 text-zinc-800">?</div>
+                        <div class="text-zinc-700 text-[10px] font-bold tracking-[0.3em] uppercase">Soul Needed</div>
+                    `;
+                }
+
+                // Click event trigger correction
+                card.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (isAdmin) {
+                        openEditSlot(i);
+                    }
+                });
+
+                grid.appendChild(card);
             });
         }
 
-        /**
-         * LOGO UPLOAD HANDLER
-         */
-        logoUploadInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const img = new Image();
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 200;
-                        const scaleSize = MAX_WIDTH / img.width;
-                        canvas.width = MAX_WIDTH;
-                        canvas.height = img.height * scaleSize;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        
-                        currentTempLogo = canvas.toDataURL('image/jpeg', 0.7);
-                        avatarPreview.src = currentTempLogo;
-                        avatarPreview.classList.remove('hidden');
-                        avatarPlaceholder.classList.add('hidden');
-                    };
-                    img.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+        // Admin Security
+        function toggleAdminModal() {
+            const modal = document.getElementById('adminModal');
+            const isVisible = modal.style.display === 'block';
+            modal.style.display = isVisible ? 'none' : 'block';
+        }
 
-        /**
-         * ADMIN ACTIONS
-         */
-        document.getElementById('adminLoginBtn').addEventListener('click', () => {
-            if(isAdmin) {
-                isAdmin = false;
-                updateAdminUI();
-                renderCards();
-            } else {
-                document.getElementById('loginModal').classList.remove('hidden');
-                adminEmailInput.focus();
-            }
-        });
+        function attemptLogin() {
+            const email = document.getElementById('adminEmail').value;
+            const pass = document.getElementById('adminPass').value;
 
-        document.getElementById('submitLoginBtn').addEventListener('click', () => {
-            const email = adminEmailInput.value.trim().toLowerCase();
-            const pass = adminPassInput.value;
-
-            if(email === ADMIN_EMAIL && pass === ADMIN_PASS) {
+            if (email === 'tdas81378@gmail.com' && pass === 'meisshub') {
                 isAdmin = true;
-                updateAdminUI();
-                document.getElementById('loginModal').classList.add('hidden');
-                adminEmailInput.value = "";
-                adminPassInput.value = "";
-                renderCards();
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('editPanel').classList.remove('hidden');
+                document.body.style.boxShadow = "inset 0 0 100px rgba(255,0,0,0.1)";
             } else {
-                // Show error shake
-                const modalBox = document.querySelector('#loginModal > div');
-                modalBox.classList.add('shake');
-                adminEmailInput.classList.add('border-red-600');
-                adminPassInput.classList.add('border-red-600');
-                
-                setTimeout(() => {
-                    modalBox.classList.remove('shake');
-                    adminEmailInput.classList.remove('border-red-600');
-                    adminPassInput.classList.remove('border-red-600');
-                }, 500);
-            }
-        });
-
-        function updateAdminUI() {
-            const icon = document.getElementById('adminStatusIcon');
-            const text = document.getElementById('adminStatusText');
-            if(isAdmin) {
-                icon.innerHTML = `<svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg>`;
-                text.innerText = "ACCESS GRANTED";
-                text.classList.replace('text-gray-400', 'text-green-500');
-            } else {
-                icon.innerHTML = `<svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>`;
-                text.innerText = "ADMIN PORTAL";
-                text.classList.replace('text-green-500', 'text-gray-400');
+                alert("ACCESS DENIED.");
             }
         }
 
-        window.openModal = function(index) {
-            if(!isAdmin) return;
+        function logout() {
+            isAdmin = false;
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('editPanel').classList.add('hidden');
+            document.body.style.boxShadow = "none";
+            toggleAdminModal();
+        }
+
+        function openEditSlot(index) {
             currentEditIndex = index;
-            const existingData = membersData[index] || { name: "", logo: "" };
-            nameInput.value = existingData.name || "";
-            currentTempLogo = existingData.logo || "";
+            document.getElementById('editingIndex').innerText = index + 1;
+            document.getElementById('editName').value = members[index].name;
+            document.getElementById('editHead').value = members[index].head;
+            document.getElementById('editSlotModal').classList.remove('hidden');
+        }
+
+        function closeEditSlot() {
+            document.getElementById('editSlotModal').classList.add('hidden');
+        }
+
+        function saveSlot() {
+            const name = document.getElementById('editName').value;
+            const head = document.getElementById('editHead').value;
             
-            if(currentTempLogo) {
-                avatarPreview.src = currentTempLogo;
-                avatarPreview.classList.remove('hidden');
-                avatarPlaceholder.classList.add('hidden');
-            } else {
-                avatarPreview.classList.add('hidden');
-                avatarPlaceholder.classList.remove('hidden');
-            }
-
-            document.getElementById('addMemberModal').classList.remove('hidden');
-            setTimeout(() => {
-                modalContent.classList.replace('scale-95', 'scale-100');
-                modalContent.classList.replace('opacity-0', 'opacity-100');
-                nameInput.focus();
-            }, 10);
-        };
-
-        document.getElementById('saveBtn').addEventListener('click', async () => {
-            if (currentEditIndex > -1 && isAdmin) {
-                membersData[currentEditIndex] = {
-                    name: nameInput.value.trim(),
-                    logo: currentTempLogo
-                };
-                const docRef = doc(db, 'artifacts', appId, 'public', 'roster_v2');
-                await setDoc(docRef, { list: membersData });
-                closeModal();
-            }
-        });
-
-        function closeModal() {
-            modalContent.classList.replace('scale-100', 'scale-95');
-            modalContent.classList.replace('opacity-100', 'opacity-0');
-            setTimeout(() => document.getElementById('addMemberModal').classList.add('hidden'), 200);
+            members[currentEditIndex] = { name, head };
+            localStorage.setItem('doomfall_members', JSON.stringify(members));
+            renderGrid();
+            closeEditSlot();
         }
 
-        document.getElementById('cancelBtn').addEventListener('click', closeModal);
-        document.getElementById('closeLoginBtn').addEventListener('click', () => document.getElementById('loginModal').classList.add('hidden'));
-
-        /**
-         * NAVIGATION
-         */
-        document.getElementById('viewMembersBtn').addEventListener('click', () => {
-            landingSection.classList.add('opacity-0', '-translate-y-10');
-            setTimeout(() => {
-                landingSection.classList.add('hidden');
-                membersSection.classList.remove('hidden');
-                renderCards(true);
-            }, 500);
-        });
-
-        document.getElementById('backBtn').addEventListener('click', () => {
-            membersSection.classList.add('hidden');
-            landingSection.classList.remove('hidden');
-            setTimeout(() => landingSection.classList.remove('opacity-0', '-translate-y-10'), 50);
-        });
-
-        initSync();
-
-        /**
-         * BACKGROUND CANVAS
-         */
-        const canvas = document.getElementById('netherCanvas');
-        const ctx = canvas.getContext('2d');
-        let w, h, particles = [];
-        function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
-        window.addEventListener('resize', resize);
-        resize();
-
-        class Particle {
-            constructor() { this.reset(); }
-            reset() {
-                this.x = Math.random() * w;
-                this.y = h + 10;
-                this.s = Math.random() * 2 + 0.5;
-                this.v = Math.random() * 0.8 + 0.2;
-                this.a = Math.random() * 0.4 + 0.1;
-            }
-            update() {
-                this.y -= this.v;
-                this.a -= 0.0015;
-                if(this.a <= 0 || this.y < -10) this.reset();
-            }
-            draw() {
-                ctx.globalAlpha = this.a;
-                ctx.fillStyle = '#ff3300';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.s, 0, Math.PI*2);
-                ctx.fill();
-            }
-        }
-        for(let i=0; i<40; i++) particles.push(new Particle());
-        function anim() {
-            ctx.clearRect(0,0,w,h);
-            particles.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(anim);
-        }
-        anim();
+        window.onload = renderGrid;
     </script>
 </body>
 </html>
