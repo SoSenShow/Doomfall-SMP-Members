@@ -3,387 +3,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DOOMFALL | THE DARK RITUAL</title>
+    <title>PREMIUM MC PVP TOURNAMENT</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Metal+Mania&family=Nosifer&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <!-- Anime.js for smooth spring animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <style>
         :root {
-            --blood: #8b0000;
-            --hellfire: #ff0000;
-            --abyss: #050000;
-            --void: #000000;
+            --neon-green: #55FF55;
+            --cyber-gold: #FFD700;
+            --discord-blurple: #5865F2;
+            --bg-dark: #0a0a0a;
         }
 
         body {
-            background-color: var(--void);
-            color: #fff;
-            font-family: 'Metal Mania', cursive;
-            overflow-x: hidden;
-            cursor: url('https://cur.cursors-4u.net/games/gam-4/gam372.cur'), auto;
-        }
-
-        .ritual-bg {
-            position: fixed;
-            inset: 0;
-            background: 
-                radial-gradient(circle at 50% 50%, rgba(139, 0, 0, 0.15) 0%, transparent 70%),
-                url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
-            z-index: -1;
-        }
-
-        .pentagram-overlay {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100vh;
-            height: 100vh;
-            opacity: 0.05;
-            pointer-events: none;
-            filter: drop-shadow(0 0 20px var(--hellfire));
-            animation: rotate-slow 60s linear infinite;
-        }
-
-        @keyframes rotate-slow {
-            from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        .nosifer { font-family: 'Nosifer', cursive; }
-        .gothic { font-family: 'UnifrakturMaguntia', serif; }
-
-        .blood-text {
-            color: var(--hellfire);
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8), 2px 2px 2px #000;
-        }
-
-        .ritual-card {
-            background: linear-gradient(135deg, #1a0000 0%, #0a0000 100%);
-            border: 2px solid #2a0000;
-            position: relative;
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
-            width: 100%;
-        }
-
-        .ritual-card:hover {
-            border-color: var(--hellfire);
-            transform: scale(1.05) rotate(1deg);
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.4);
-        }
-
-        .card-number {
-            font-family: 'Creepster', cursive;
-            color: var(--blood);
-            position: absolute;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 1.2rem;
-            opacity: 0.5;
-        }
-
-        .sacrificial-btn {
-            background: #4a0000;
-            border: 2px solid var(--hellfire);
-            padding: 12px 30px;
-            color: #fff;
-            font-size: 1rem;
-            letter-spacing: 3px;
-            position: relative;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: white;
             overflow: hidden;
-            transition: 0.3s;
-            text-transform: uppercase;
+            perspective: 1000px;
         }
 
-        @media (min-width: 768px) {
-            .sacrificial-btn {
-                padding: 15px 40px;
-                font-size: 1.2rem;
-                letter-spacing: 5px;
-            }
+        .title-font { font-family: 'Syncopate', sans-serif; }
+
+        /* Animated Particle Background */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0a 100%);
         }
 
-        .sacrificial-btn:hover {
-            background: var(--hellfire);
-            color: #000;
-            box-shadow: 0 0 50px var(--hellfire);
+        /* Glassmorphism Classes */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: var(--blood); }
+        /* Glitch Effect */
+        .glitch {
+            position: relative;
+            text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75),
+                        -0.025em -0.05em 0 rgba(0, 255, 0, 0.75),
+                        0.025em 0.05em 0 rgba(0, 255, 0, 0.75);
+            animation: glitch 500ms infinite;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75), -0.05em -0.025em 0 rgba(0, 255, 0, 0.75), 0.025em 0.05em 0 rgba(0, 255, 0, 0.75); }
+            14% { text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75), -0.05em -0.025em 0 rgba(0, 255, 0, 0.75), 0.025em 0.05em 0 rgba(0, 255, 0, 0.75); }
+            15% { text-shadow: -0.05em -0.025em 0 rgba(255, 0, 0, 0.75), 0.025em 0.025em 0 rgba(0, 255, 0, 0.75), -0.05em -0.05em 0 rgba(0, 0, 255, 0.75); }
+            49% { text-shadow: -0.05em -0.025em 0 rgba(255, 0, 0, 0.75), 0.025em 0.025em 0 rgba(0, 255, 0, 0.75), -0.05em -0.05em 0 rgba(0, 0, 255, 0.75); }
+            50% { text-shadow: 0.025em 0.05em 0 rgba(255, 0, 0, 0.75), 0.05em 0 0 rgba(0, 255, 0, 0.75), 0 -0.05em 0 rgba(0, 0, 255, 0.75); }
+            99% { text-shadow: 0.025em 0.05em 0 rgba(255, 0, 0, 0.75), 0.05em 0 0 rgba(0, 255, 0, 0.75), 0 -0.05em 0 rgba(0, 0, 255, 0.75); }
+            100% { text-shadow: -0.025em 0 0 rgba(255, 0, 0, 0.75), -0.025em -0.025em 0 rgba(0, 255, 0, 0.75), -0.025em -0.05em 0 rgba(0, 0, 255, 0.75); }
+        }
+
+        /* 3D Card Hover */
+        .card-3d {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transform-style: preserve-3d;
+        }
+        .card-3d:hover {
+            transform: translateZ(20px) rotateX(5deg) rotateY(5deg);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            border-color: var(--cyber-gold);
+        }
+
+        /* Radial Glow for Start Button */
+        .radial-glow {
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2), 0 0 60px rgba(255, 215, 0, 0.1);
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
+            50% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.6); }
+        }
+
+        .blurple-gradient {
+            background: linear-gradient(135deg, #5865F2 0%, #4752C4 100%);
+            transition: background 0.3s ease;
+        }
+        .blurple-gradient:hover {
+            background: linear-gradient(135deg, #4752C4 0%, #5865F2 100%);
+        }
     </style>
 </head>
-<body>
+<body class="h-screen w-full flex items-center justify-center overflow-hidden">
 
-    <div class="ritual-bg"></div>
-    <img src="https://www.transparentpng.com/download/pentagram/pentagram-simple-design-png-6.png" class="pentagram-overlay" alt="pentagram">
+    <canvas id="bg-canvas"></canvas>
 
-    <header class="fixed top-0 w-full z-[100] p-4 md:p-6 border-b border-red-900/30 backdrop-blur-md flex justify-between items-center">
-        <div class="flex items-center gap-4">
-            <span class="nosifer text-red-600 text-lg md:text-2xl tracking-tighter">DOOMFALL</span>
-        </div>
-        <div class="flex gap-4 md:gap-8 text-[10px] md:text-xs uppercase tracking-[0.2em] md:tracking-[0.3em] font-bold">
-            <button onclick="toggleAdminModal()" class="text-red-700 hover:text-red-500 font-black">Admin Override</button>
-        </div>
-    </header>
-
-    <section id="hero" class="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20">
-        <div class="mb-4 md:mb-6 nosifer text-red-700 animate-pulse text-[10px] md:text-sm">25 Souls Required for the Ritual</div>
-        <h1 class="gothic text-5xl md:text-8xl lg:text-9xl mb-8 md:mb-10 blood-text leading-tight">Forbidden <br> Covenant</h1>
-        <p class="max-w-xl text-zinc-500 italic mb-10 md:mb-12 gothic text-base md:text-lg">"In the shadow of the abyss, twenty-five shall stand. Bound by blood, marked by fate."</p>
-        <button onclick="beginRitual()" class="sacrificial-btn nosifer">VIEW MEMBERS</button>
-    </section>
-
-    <section id="roster" class="relative z-10 max-w-7xl mx-auto py-24 md:py-32 px-6 hidden opacity-0 transition-all duration-1000">
-        <div class="text-center mb-16 md:mb-24">
-            <h2 class="nosifer text-3xl md:text-5xl text-red-600 mb-4 uppercase">Doomfall Members</h2>
-            <div class="w-24 md:w-32 h-1 bg-red-600 mx-auto"></div>
-        </div>
-
-        <div id="membersGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 md:gap-12">
-            <!-- Members loading from cloud -->
-        </div>
-
-        <div class="mt-16 md:mt-24 flex flex-col md:flex-row items-center justify-center gap-6">
-            <button id="adminBtn" onclick="toggleEditMode()" class="hidden sacrificial-btn text-[10px] md:text-xs px-8 md:px-10 w-full md:w-auto">Alter the Contract</button>
-            <button onclick="endRitual()" class="px-8 py-3 border border-red-900/50 text-red-900 hover:text-red-500 transition-all uppercase text-[9px] md:text-[10px] tracking-[0.4em] md:tracking-[0.5em] w-full md:w-auto">Back to Home</button>
-        </div>
-    </section>
-
-    <div id="adminModal" class="fixed inset-0 z-[200] hidden flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl">
-        <div class="w-full max-w-md p-8 md:p-12 border-2 border-red-900 bg-[#050000] relative">
-            <h3 class="nosifer text-red-600 text-center text-lg md:text-xl mb-8 md:mb-12 uppercase">Identify Yourself</h3>
-            <div id="loginForm" class="space-y-6 md:space-y-8">
-                <input type="email" id="adminEmail" class="w-full bg-transparent border-b border-red-900/50 p-3 md:p-4 outline-none focus:border-red-600 transition-all text-red-500 font-mono text-sm" placeholder="Sinner's Email">
-                <input type="password" id="adminPass" class="w-full bg-transparent border-b border-red-900/50 p-3 md:p-4 outline-none focus:border-red-600 transition-all text-red-500 font-mono text-sm" placeholder="Sacrificial Key">
-                <button onclick="verifyAccess()" class="w-full sacrificial-btn py-3 md:py-4 text-xs">Pass Through</button>
+    <!-- Sidebar (Phase 2 - Spring Animation) -->
+    <div id="sidebar" class="fixed top-4 left-4 h-[calc(100vh-32px)] w-72 glass rounded-2xl transform -translate-x-[120%] z-50 p-8 flex flex-col items-center shadow-2xl">
+        <div class="relative group">
+            <div class="absolute -inset-1 bg-gradient-to-r from-[#55FF55] to-[#FFD700] rounded-full blur opacity-25 group-hover:opacity-75 transition duration-1000"></div>
+            <div class="relative w-32 h-32 bg-gray-800 rounded-full mb-6 border-2 border-white/10 overflow-hidden">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=ProPlayer" alt="Avatar" class="w-full h-full object-cover">
             </div>
-            <div id="adminSuccess" class="hidden text-center py-6 md:py-10">
-                <p class="nosifer text-white mb-8 md:mb-10 text-sm">Welcome back, Archdemon.</p>
-                <button onclick="logout()" class="text-red-600 underline text-[10px] tracking-widest uppercase">Relinquish Power</button>
+        </div>
+        
+        <h3 class="text-2xl font-black title-font mb-1 tracking-tighter">PLAYER_001</h3>
+        <div class="flex items-center gap-2 mb-8">
+            <span class="w-2 h-2 bg-[#55FF55] rounded-full animate-pulse"></span>
+            <span class="text-[#55FF55] text-[10px] font-black uppercase tracking-[0.2em]">Verified Elite</span>
+        </div>
+        
+        <div class="w-full space-y-4">
+            <!-- Rank Removed as requested -->
+            <div class="p-4 bg-white/5 rounded-xl border border-white/5">
+                <p class="text-xs text-gray-400 font-medium italic">"Victory is a habit."</p>
             </div>
-            <button onclick="toggleAdminModal()" class="absolute top-4 right-4 text-red-900 text-xl">✕</button>
+        </div>
+
+        <div class="mt-auto w-full text-center">
+            <p class="text-[10px] text-gray-600 font-bold tracking-widest uppercase mb-4">MC PVP Client v2.5</p>
         </div>
     </div>
 
-    <div id="editSlotModal" class="fixed inset-0 z-[300] hidden flex items-center justify-center p-4 bg-black/90">
-        <div class="w-full max-w-lg p-6 md:p-10 bg-[#0a0000] border-2 border-red-600 shadow-[0_0_50px_rgba(139,0,0,0.3)]">
-            <h4 class="nosifer text-red-600 text-center mb-8 md:mb-10 text-sm md:text-base">Modify the Soul</h4>
-            <div class="space-y-6 md:space-y-8">
-                <input type="text" id="editName" class="w-full bg-black border border-red-900 p-3 md:p-4 text-red-500 nosifer focus:border-red-600 outline-none text-xs" placeholder="Soul Alias">
-                <div class="flex flex-col items-center">
-                    <div id="previewBox" class="w-24 h-24 md:w-32 md:h-32 border-2 border-red-900/30 flex items-center justify-center bg-black mb-4 md:mb-6 relative group overflow-hidden">
-                        <img id="headPreview" src="" class="hidden w-full h-full object-contain">
-                        <span class="nosifer text-[8px] md:text-[10px] text-red-900">No Essence</span>
-                    </div>
-                    <input type="file" id="fileInput" class="hidden" onchange="processFile(this)">
-                    <button onclick="document.getElementById('fileInput').click()" class="text-[8px] md:text-[10px] text-red-600 border border-red-900 px-4 md:px-6 py-2 hover:bg-red-900/20 transition-all nosifer">Capture Image</button>
-                    <input type="hidden" id="headBase64">
+    <!-- Main Landing Screen -->
+    <div id="landing-screen" class="text-center z-10">
+        <h1 class="glitch title-font text-5xl md:text-8xl font-black mb-12 tracking-tighter italic">
+            MC <span class="text-[#55FF55]">PVP</span> <span class="text-[#FFD700]">TOURNAMENT</span>
+        </h1>
+
+        <!-- Container for Morphing Effect -->
+        <div id="action-container" class="flex justify-center items-center h-24">
+            <!-- Discord Verify Button -->
+            <button id="verify-btn" class="blurple-gradient flex items-center gap-4 text-white font-black py-5 px-10 rounded-full shadow-xl transform transition-all active:scale-95 group">
+                <div class="animate-bounce group-hover:animate-none">
+                    <svg class="w-7 h-7 fill-white" viewBox="0 0 127.14 96.36">
+                        <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.06,72.06,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.71,32.65-1.82,56.6.48,80.21a105.73,105.73,0,0,0,32.28,16.15,77.7,77.7,0,0,0,6.89-11.11,68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.29-16.15C129.5,50.55,124.27,27.05,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/>
+                    </svg>
                 </div>
-                <div class="flex flex-col md:flex-row gap-4">
-                    <button onclick="confirmEdit()" class="flex-1 sacrificial-btn text-[10px] py-3 md:py-4">Bind Soul</button>
-                    <button onclick="closeEditModal()" class="flex-1 bg-transparent border border-red-900 text-red-900 py-3 md:py-4 text-[10px] font-bold hover:text-red-500 uppercase">Banish</button>
-                </div>
-            </div>
+                <span class="tracking-widest uppercase text-sm">Verify Identity</span>
+            </button>
+
+            <!-- Start Button (Morph target) -->
+            <button id="start-btn" class="hidden radial-glow bg-[#FFD700] text-black font-black py-6 px-20 text-3xl rounded-full shadow-2xl transition-all hover:scale-110 active:scale-90 title-font scale-0">
+                START
+            </button>
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    <!-- Floating Glass Grid Menu -->
+    <div id="grid-menu" class="fixed inset-0 bg-black/80 backdrop-blur-xl z-[100] hidden flex-col items-center justify-center p-6 md:p-10 opacity-0">
+        <div class="mb-12 text-center">
+            <h2 class="text-4xl md:text-6xl font-black title-font text-[#FFD700] tracking-widest mb-2 italic">DASHBOARD</h2>
+            <p class="text-gray-500 font-bold uppercase tracking-[0.5em] text-xs">Choose Your Destination</p>
+        </div>
 
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full max-w-5xl">
+            <!-- Card 1 -->
+            <div class="card-3d glass p-10 rounded-3xl flex flex-col items-center cursor-pointer group">
+                <div class="text-6xl mb-6 transition-transform group-hover:scale-125 duration-300">📊</div>
+                <h3 class="text-2xl font-black title-font">STANDINGS</h3>
+                <div class="mt-4 w-12 h-1 bg-[#55FF55] group-hover:w-24 transition-all duration-300"></div>
+            </div>
 
-        let members = Array(25).fill(null).map(() => ({ name: '', head: '' }));
-        let isAdmin = false;
-        let isEditMode = false;
-        let targetIndex = -1;
-        let currentUser = null;
+            <!-- Card 2 -->
+            <div class="card-3d glass p-10 rounded-3xl flex flex-col items-center cursor-pointer group">
+                <div class="text-6xl mb-6 transition-transform group-hover:scale-125 duration-300">⚔️</div>
+                <h3 class="text-2xl font-black title-font">MATCHES</h3>
+                <div class="mt-4 w-12 h-1 bg-blue-500 group-hover:w-24 transition-all duration-300"></div>
+            </div>
 
-        // --- AUTH SETUP ---
-        const initAuth = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
+            <!-- Card 3 (Admin Restricted) -->
+            <div class="card-3d glass p-10 rounded-3xl flex flex-col items-center cursor-pointer group relative overflow-hidden">
+                <div class="absolute inset-0 bg-red-900/10 group-hover:bg-red-900/20 transition-colors"></div>
+                <div class="text-6xl mb-6 grayscale group-hover:grayscale-0 transition-all">🛡️</div>
+                <h3 class="text-2xl font-black title-font text-red-500">ADMIN VIEW</h3>
+                <p class="text-[10px] text-red-600 font-bold mt-2 animate-pulse">RESTRICTED ACCESS</p>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="card-3d glass p-10 rounded-3xl flex flex-col items-center cursor-pointer group">
+                <div class="text-6xl mb-6 transition-transform group-hover:scale-125 duration-300">🏆</div>
+                <h3 class="text-2xl font-black title-font text-[#FFD700]">PLAYOFFS</h3>
+                <div class="mt-4 w-12 h-1 bg-[#FFD700] group-hover:w-24 transition-all duration-300"></div>
+            </div>
+        </div>
+
+        <button id="close-menu" class="mt-16 text-gray-500 hover:text-white transition-colors font-bold uppercase tracking-[0.3em] text-sm">
+            Exit Dashboard
+        </button>
+    </div>
+
+    <script>
+        // --- Particle Background Logic ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function initCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.color = Math.random() > 0.5 ? '#55FF55' : '#FFD700';
+                this.opacity = Math.random();
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.opacity;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        initCanvas();
+        for (let i = 0; i < 100; i++) particles.push(new Particle());
+        animate();
+        window.addEventListener('resize', initCanvas);
+
+        // --- Interaction Logic ---
+        const verifyBtn = document.getElementById('verify-btn');
+        const startBtn = document.getElementById('start-btn');
+        const sidebar = document.getElementById('sidebar');
+        const gridMenu = document.getElementById('grid-menu');
+        const closeMenu = document.getElementById('close-menu');
+
+        verifyBtn.addEventListener('click', () => {
+            // Morph Animation using Anime.js
+            anime({
+                targets: verifyBtn,
+                scale: 0,
+                opacity: 0,
+                duration: 400,
+                easing: 'easeInOutQuad',
+                complete: () => {
+                    verifyBtn.classList.add('hidden');
+                    startBtn.classList.remove('hidden');
+                    
+                    // Spring-up START button
+                    anime({
+                        targets: startBtn,
+                        scale: [0, 1],
+                        opacity: [0, 1],
+                        duration: 1200,
+                        easing: 'easeOutElastic(1, .5)'
+                    });
+
+                    // Elastic sidebar slide-in
+                    anime({
+                        targets: sidebar,
+                        translateX: ['-120%', 0],
+                        duration: 1500,
+                        easing: 'easeOutElastic(1, .6)'
+                    });
                 }
-            } catch (err) {
-                console.error("Auth Error", err);
-            }
-        };
-
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            if (user) {
-                // Once authenticated, sync data from cloud
-                syncData();
-            }
+            });
         });
 
-        initAuth();
-
-        // --- DATA SYNC (FIRESTORE) ---
-        function syncData() {
-            const ritualDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'ritual_state');
+        startBtn.addEventListener('click', () => {
+            gridMenu.classList.remove('hidden');
+            gridMenu.classList.add('flex');
             
-            // Listen for real-time updates from cloud
-            onSnapshot(ritualDocRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    members = docSnap.data().members || members;
-                } else {
-                    // Initialize if not exists
-                    saveToCloud();
+            anime({
+                targets: gridMenu,
+                opacity: [0, 1],
+                duration: 600,
+                easing: 'easeOutQuad'
+            });
+
+            anime({
+                targets: '.card-3d',
+                translateY: [50, 0],
+                opacity: [0, 1],
+                delay: anime.stagger(100),
+                easing: 'easeOutExpo'
+            });
+        });
+
+        closeMenu.addEventListener('click', () => {
+            anime({
+                targets: gridMenu,
+                opacity: 0,
+                duration: 400,
+                easing: 'easeInQuad',
+                complete: () => {
+                    gridMenu.classList.add('hidden');
+                    gridMenu.classList.remove('flex');
                 }
-                renderRitual();
-            }, (error) => {
-                console.error("Sync error:", error);
             });
-        }
-
-        async function saveToCloud() {
-            if (!currentUser) return;
-            const ritualDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'ritual_state');
-            await setDoc(ritualDocRef, { members });
-        }
-
-        // --- UI LOGIC ---
-        window.beginRitual = () => {
-            document.getElementById('hero').style.transform = 'translateY(-50px)';
-            document.getElementById('hero').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('hero').classList.add('hidden');
-                const roster = document.getElementById('roster');
-                roster.classList.remove('hidden');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                setTimeout(() => roster.style.opacity = '1', 100);
-            }, 500);
-            renderRitual();
-        }
-
-        window.endRitual = () => {
-            const roster = document.getElementById('roster');
-            roster.style.opacity = '0';
-            setTimeout(() => {
-                roster.classList.add('hidden');
-                const hero = document.getElementById('hero');
-                hero.classList.remove('hidden');
-                setTimeout(() => {
-                    hero.style.transform = 'translateY(0)';
-                    hero.style.opacity = '1';
-                }, 100);
-            }, 500);
-        }
-
-        function renderRitual() {
-            const grid = document.getElementById('membersGrid');
-            if (!grid) return;
-            grid.innerHTML = '';
-            
-            members.forEach((m, i) => {
-                const card = document.createElement('div');
-                card.className = `ritual-card min-h-[340px] md:min-h-[380px] p-6 md:p-8 flex flex-col items-center justify-center cursor-pointer group ${!m.name ? 'opacity-20 hover:opacity-100 grayscale' : ''} ${isEditMode ? 'border-red-500 animate-pulse' : ''}`;
-                
-                const headSrc = m.head ? (m.head.startsWith('data') ? m.head : `https://mc-heads.net/head/${m.head}/128`) : null;
-
-                card.innerHTML = `
-                    <div class="card-number italic">VICTIM ${(i+1).toString().padStart(2, '0')}</div>
-                    <div class="relative w-24 h-24 md:w-32 md:h-32 mb-6 md:mb-8 transition-transform group-hover:rotate-12">
-                        ${headSrc ? `
-                            <div class="absolute inset-0 bg-red-600/20 blur-2xl group-hover:bg-red-600/50"></div>
-                            <img src="${headSrc}" class="relative w-full h-full object-contain filter drop-shadow-[0_0_15px_rgba(255,0,0,0.5)]">
-                        ` : `
-                            <div class="nosifer text-5xl md:text-6xl text-red-950/30">†</div>
-                        `}
-                    </div>
-                    <div class="text-center">
-                        <h3 class="nosifer text-lg md:text-xl text-white tracking-widest uppercase mb-2 truncate max-w-[120px] md:max-w-[150px] mx-auto">${m.name || 'MISSING'}</h3>
-                        <p class="text-[8px] md:text-[9px] text-red-800 font-bold tracking-[0.3em] md:tracking-[0.4em] uppercase">${m.name ? 'ETERNALLY BOUND' : 'SOUL VACANT'}</p>
-                    </div>
-                `;
-
-                if(isEditMode) card.onclick = () => openEditModal(i);
-                grid.appendChild(card);
-            });
-        }
-
-        // --- ADMIN & EDITING ---
-        window.toggleAdminModal = () => document.getElementById('adminModal').classList.toggle('hidden');
-
-        window.verifyAccess = () => {
-            const email = document.getElementById('adminEmail').value;
-            const pass = document.getElementById('adminPass').value;
-            if(email === 'tdas81378@gmail.com' && pass === 'meisshub') {
-                isAdmin = true;
-                document.getElementById('loginForm').classList.add('hidden');
-                document.getElementById('adminSuccess').classList.remove('hidden');
-                document.getElementById('adminBtn').classList.remove('hidden');
-            } else {
-                alert("The Abyss rejects your soul. Incorrect Key.");
-            }
-        };
-
-        window.toggleEditMode = () => {
-            isEditMode = !isEditMode;
-            document.getElementById('adminBtn').innerText = isEditMode ? "Seal Contract" : "Alter the Contract";
-            renderRitual();
-        };
-
-        window.logout = () => {
-            isAdmin = false; isEditMode = false;
-            document.getElementById('loginForm').classList.remove('hidden');
-            document.getElementById('adminSuccess').classList.add('hidden');
-            document.getElementById('adminBtn').classList.add('hidden');
-            toggleAdminModal();
-            renderRitual();
-        };
-
-        function openEditModal(i) {
-            targetIndex = i;
-            document.getElementById('editName').value = members[i].name;
-            document.getElementById('headBase64').value = members[i].head;
-            const preview = document.getElementById('headPreview');
-            if(members[i].head) {
-                preview.src = members[i].head;
-                preview.classList.remove('hidden');
-            } else {
-                preview.classList.add('hidden');
-            }
-            document.getElementById('editSlotModal').classList.remove('hidden');
-        }
-
-        window.closeEditModal = () => document.getElementById('editSlotModal').classList.add('hidden');
-
-        window.processFile = (input) => {
-            const file = input.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById('headBase64').value = e.target.result;
-                    const preview = document.getElementById('headPreview');
-                    preview.src = e.target.result;
-                    preview.classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-
-        window.confirmEdit = async () => {
-            const name = document.getElementById('editName').value;
-            const head = document.getElementById('headBase64').value;
-            
-            members[targetIndex] = { name, head };
-            await saveToCloud(); // Save to cloud instead of localStorage
-            closeEditModal();
-        };
+        });
     </script>
 </body>
 </html>
