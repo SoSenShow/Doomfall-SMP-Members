@@ -144,7 +144,7 @@
     </div>
 
     <script>
-        // --- Exact Configuration ---
+        // --- Discord OAuth2 Configuration ---
         const CLIENT_ID = '1477950063941783604';
         const REDIRECT_URI = 'http://127.0.0.1:5500/index.html';
 
@@ -154,13 +154,15 @@
         function redirectToDiscord() {
             const scope = encodeURIComponent('identify');
             const encodedRedirect = encodeURIComponent(REDIRECT_URI);
+            // Constructing the exact URL format requested
             const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodedRedirect}&response_type=token&scope=${scope}`;
             
+            console.log("Redirecting to Discord:", authUrl);
             window.location.href = authUrl;
         }
 
         /**
-         * Extract token and fetch profile
+         * Extract token from window.location.hash and fetch profile
          */
         async function handleAuth() {
             const hash = window.location.hash;
@@ -168,11 +170,12 @@
             const accessToken = params.get('access_token');
 
             if (accessToken) {
-                // Clear URL hash
+                // Clear the hash from the URL bar for a cleaner experience
                 window.history.replaceState({}, document.title, window.location.pathname);
                 localStorage.setItem('dc_token', accessToken);
                 await initializeUserSession(accessToken, true);
             } else {
+                // Check if we already have a token saved
                 const savedToken = localStorage.getItem('dc_token');
                 if (savedToken) {
                     await initializeUserSession(savedToken, false);
@@ -180,22 +183,30 @@
             }
         }
 
+        /**
+         * Fetch profile from Discord API
+         */
         async function initializeUserSession(token, isNewLogin) {
             try {
                 const response = await fetch('https://discord.com/api/v10/users/@me', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
-                if (!response.ok) throw new Error('Invalid Token');
+                if (!response.ok) {
+                    throw new Error('Discord Session Expired or Invalid');
+                }
 
-                const data = await response.json();
-                updateUserUI(data, isNewLogin);
+                const userData = await response.json();
+                updateUserUI(userData, isNewLogin);
             } catch (err) {
-                console.error("Auth Error:", err);
+                console.error("Auth initialization failed:", err);
                 localStorage.removeItem('dc_token');
             }
         }
 
+        /**
+         * Update the UI with Discord profile data and trigger animations
+         */
         function updateUserUI(user, animate) {
             // Update Sidebar Info
             const avatarEl = document.getElementById('user-avatar');
@@ -204,17 +215,18 @@
             if (user.avatar) {
                 avatarEl.src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256`;
             } else {
+                // Default avatar logic for users without a custom one
                 const defaultIdx = user.discriminator === '0' ? (user.id >> 22) % 6 : user.discriminator % 5;
                 avatarEl.src = `https://cdn.discordapp.com/embed/avatars/${defaultIdx}.png`;
             }
             avatarEl.style.opacity = '1';
 
-            // Swap Buttons & Show Content
+            // Swap Verify button for the Verified Menu
             document.getElementById('verify-btn').classList.add('hidden');
             document.getElementById('verified-content').classList.remove('hidden');
 
             if (animate) {
-                // Sidebar Slide In
+                // Sidebar Slide In animation
                 anime({
                     targets: '#sidebar',
                     translateX: ['-120%', 0],
@@ -222,7 +234,7 @@
                     easing: 'easeOutExpo'
                 });
 
-                // Start Button Pop
+                // Start Button scale animation
                 anime({
                     targets: '#start-btn',
                     scale: [0, 1],
@@ -231,7 +243,7 @@
                     easing: 'easeOutElastic(1, .6)'
                 });
 
-                // Cards Stagger
+                // Menu Cards staggered entrance
                 anime({
                     targets: '#menu-cards',
                     translateY: [40, 0],
@@ -241,18 +253,22 @@
                     easing: 'easeOutExpo'
                 });
             } else {
+                // Instantly set states if no animation needed
                 document.getElementById('sidebar').style.transform = 'translateX(0)';
                 document.getElementById('menu-cards').style.opacity = '1';
                 document.getElementById('menu-cards').style.transform = 'translateY(0)';
             }
         }
 
+        /**
+         * Clear session and return to initial state
+         */
         function logout() {
             localStorage.removeItem('dc_token');
             window.location.href = REDIRECT_URI;
         }
 
-        // --- Visual Background Effects ---
+        // --- Visual Background Effects (Dynamic Canvas) ---
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -272,7 +288,6 @@
                 this.size = Math.random() * 1.5 + 0.5;
                 this.speedX = (Math.random() - 0.5) * 0.5;
                 this.speedY = (Math.random() - 0.5) * 0.5;
-                this.life = Math.random() * 100;
             }
             update() {
                 this.x += this.speedX;
@@ -294,13 +309,14 @@
             requestAnimationFrame(animate);
         }
 
+        // Initial setup
         initCanvas();
         for (let i = 0; i < 100; i++) particles.push(new Particle());
         animate();
         window.addEventListener('resize', initCanvas);
 
-        // Run Auth check on load
-        window.onload = handleAuth;
+        // Check for authentication on page load
+        window.addEventListener('load', handleAuth);
     </script>
 </body>
 </html>
